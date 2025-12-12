@@ -11,17 +11,6 @@ st.set_page_config(page_title="Boston Housing Prices", layout="wide")
 # Load data function
 @st.cache_data
 def load_data():
-    data_url = "http://lib.stat.cmu.edu/datasets/boston"
-    raw_df = pd.read_csv(data_url, sep="\s+", skiprows=22, header=None)
-    data = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :3]])
-    feature_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT']
-    df = pd.DataFrame(data, columns=feature_names)
-    df['MEDV'] = raw_df.values[1::2, 2]
-    return df
-
-# Load model function
-@st.cache_resource
-def load_data():
     # Use the local CSV file
     df = pd.read_csv('boston_housing.csv') 
     
@@ -30,6 +19,16 @@ def load_data():
         st.error("Error: 'MEDV' column not found in boston_housing.csv")
     
     return df
+
+# Load model function
+@st.cache_resource
+def load_model():
+    try:
+        return joblib.load('model.pkl')
+    except FileNotFoundError:
+        st.error("Model file 'model.pkl' not found. Please run 'train_model.py' first.")
+        return None
+
 # Main App
 st.title("Boston Housing Price Prediction 🏠")
 
