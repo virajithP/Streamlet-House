@@ -10,30 +10,17 @@ import joblib
 
 # 1. Data Ingestion
 # The Boston dataset is deprecated in sklearn, so we load from the original source
-data_url = "http://lib.stat.cmu.edu/datasets/boston"
-print(f"Loading data from {data_url}...")
+print("Loading data from local file: boston_housing.csv...")
 
-raw_df = pd.read_csv(data_url, sep=r"\s+", skiprows=22, header=None)
+# Load the data directly from the CSV
+try:
+    df = pd.read_csv('boston_housing.csv')
+except FileNotFoundError:
+    print("Error: boston_housing.csv not found. Please ensure the file is in the same directory.")
+    # Exit or raise error
+    raise
 
-# The dataset is split into two lines per entry usually, but let's check the structure.
-# Just following standard handling for this specific raw source which often needs careful parsing.
-# Actually, the standard way to load the raw boston data now:
-# Variables in order:
-# CRIM, ZN, INDUS, CHAS, NOX, RM, AGE, DIS, RAD, TAX, PTRATIO, B, LSTAT, MEDV
-# The file format has 506 lines, but some rows are split.
-# Let's try a safer approach using the numpy trick often cited for this dataset source
-# or simply use `pd.read_csv` with specific engine if needed.
-# However, `read_csv` with `sep="\s+"` handles it if formatted correctly, but the raw file has 
-# a jagged structure (some rows continue on next line).
-
-# Let's use the parsing logic recommended for this specific URL structure:
-# The first 11 columns are in one line, the next 3 (B, LSTAT, MEDV) are on the next line.
-data = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :3]])
-target = raw_df.values[1::2, 2]
-
-feature_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
-df = pd.DataFrame(data, columns=feature_names)
-# df['MEDV'] = target  # MEDV is already in data and feature_names
+# The rest of the script remains the same (EDA, Model Training)
 
 print("Data loaded successfully.")
 print(df.head())

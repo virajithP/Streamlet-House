@@ -21,13 +21,15 @@ def load_data():
 
 # Load model function
 @st.cache_resource
-def load_model():
-    try:
-        return joblib.load('model.pkl')
-    except FileNotFoundError:
-        st.error("Model file 'model.pkl' not found. Please run 'train_model.py' first.")
-        return None
-
+def load_data():
+    # Use the local CSV file
+    df = pd.read_csv('boston_housing.csv') 
+    
+    # Ensure the required columns are present (optional check)
+    if 'MEDV' not in df.columns:
+        st.error("Error: 'MEDV' column not found in boston_housing.csv")
+    
+    return df
 # Main App
 st.title("Boston Housing Price Prediction 🏠")
 
@@ -62,7 +64,7 @@ with tab2:
     with col1:
         st.subheader("Correlation Heatmap")
         fig_corr, ax_corr = plt.subplots(figsize=(10, 8))
-        sns.heatmap(df.corr(), annot=True, fmt='.2f', cmap='coolwarm', ax=ax_corr)
+        sns.heatmap(df.corr(), annot=True, fmt='.2f', cmap='coolwarm', ax=ax_corr)``
         st.pyplot(fig_corr)
         
     with col2:
